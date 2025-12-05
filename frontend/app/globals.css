@@ -1,0 +1,61 @@
+/* 🚀 1. เรียกใช้งาน Tailwind CSS */
+/* @import "tailwindcss"; เป็นคำสั่งใหม่ของ Tailwind v4 เพื่อโหลดเครื่องมือทั้งหมดเข้ามา */
+@import "tailwindcss";
+
+/* 🎨 2. การกำหนดตัวแปรสี (CSS Variables) */
+/* :root คือรากฐานของเว็บ (มองเห็นได้ทุกที่) */
+:root {
+  /* กำหนดสีพื้นหลัง (สีขาว) และสีตัวอักษร (สีเกือบดำ) สำหรับโหมดปกติ (Light Mode) */
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* ⚙️ 3. การตั้งค่า Theme ของ Tailwind (v4 Syntax) */
+/* ส่วนนี้เป็นการเชื่อมตัวแปร CSS ด้านบน ให้กลายเป็น Class ของ Tailwind */
+@theme inline {
+  /* ทำให้เราใช้ class "bg-background" ได้ */
+  --color-background: var(--background);
+  /* ทำให้เราใช้ class "text-foreground" ได้ */
+  --color-foreground: var(--foreground);
+  
+  /* กำหนดฟอนต์ (ตัวแปรนี้มักจะถูกส่งมาจาก Next.js Font Optimization ในไฟล์ layout.tsx) */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* 🌙 4. โหมดมืด (Dark Mode) */
+/* ถ้าเครื่องผู้ใช้ตั้งค่าเป็น Dark Mode ให้เปลี่ยนค่าตัวแปรสีใหม่ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a; /* พื้นหลังสีดำ */
+    --foreground: #ededed; /* ตัวหนังสือสีขาว */
+  }
+}
+
+/* 📄 5. สไตล์พื้นฐานของ Body */
+body {
+  background: var(--background); /* ใช้สีจากตัวแปรด้านบน */
+  color: var(--foreground);      /* ใช้สีจากตัวแปรด้านบน */
+  /* กำหนดฟอนต์สำรองกรณีโหลดฟอนต์หลักไม่ได้ */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 🛠️ 6. เลเยอร์ของ Tailwind (Tailwind Directives) */
+/* เป็นการสั่งให้ Tailwind แปะโค้ด CSS ที่จำเป็นลงไป */
+@tailwind base;       /* พื้นฐาน (Reset CSS ให้ทุก Browser แสดงผลเหมือนกัน) */
+@tailwind components; /* คลาสสำเร็จรูป (Components) */
+@tailwind utilities;  /* เครื่องมือตกแต่ง (เช่น p-4, flex, text-center) */
+
+/* ✍️ 7. คลาสที่เขียนเพิ่มเอง (Custom Class) */
+/* สร้างคลาสชื่อ .font-serif ให้ใช้ฟอนต์แนวโบราณ/ทางการ (Georgia) */
+.font-serif {
+  font-family: 'Georgia', 'Times New Roman', Times, serif;
+}
+
+/* 🌸 8. การทับค่าสีพื้นหลัง (Override) */
+/* *สำคัญ* บรรทัดนี้จะทำงานทีหลังสุดและทับค่า --background ด้านบน */
+body {
+  /* เปลี่ยนพื้นหลังเว็บทั้งเว็บให้เป็นสี "ชมพูอ่อนๆ/ม่วงจางๆ" */
+  background-color: #fdf4ff; 
+}
+

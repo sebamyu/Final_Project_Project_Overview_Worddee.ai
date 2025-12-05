@@ -1,0 +1,56 @@
+# ระบุเวอร์ชันของรูปแบบ Docker Compose (3.8 เป็นเวอร์ชันมาตรฐานที่รองรับฟีเจอร์ใหม่ๆ)
+version: '3.8'
+
+services:
+  # กำหนดชื่อ Service ว่า "n8n" (ใช้เรียกอ้างอิงภายในระบบ Docker)
+  n8n:
+    # ระบุ Image ที่จะใช้ คือ n8n เวอร์ชันล่าสุดจาก Docker Hub
+    image: n8nio/n8n:latest
+    
+    # ตั้งชื่อ Container ให้จำง่ายๆ ว่า "n8n" (เวลาพิมพ์คำสั่ง docker logs n8n จะได้ไม่ต้องจำรหัสยาว ๆ)
+    container_name: n8n
+    
+    # สั่งให้เริ่มทำงานใหม่เสมอถ้าระบบล่ม หรือเครื่องรีสตาร์ท (Auto-restart)
+    restart: always
+    
+    # เชื่อมต่อ Port (ประตู)
+    # ฝั่งซ้าย "5678" คือ Port บนคอมพิวเตอร์ของเรา (Host)
+    # ฝั่งขวา "5678" คือ Port ที่โปรแกรม n8n เปิดรออยู่ข้างใน (Container)
+    ports:
+      - "5678:5678"
+      
+    # ตั้งค่าตัวแปรสภาพแวดล้อม (Environment Variables) เพื่อกำหนดพฤติกรรมของ n8n
+    environment:
+      # ตั้งค่า Host และ Port พื้นฐานของ n8n
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      
+      # สำคัญ: ลิงก์ที่ n8n จะใช้สร้าง URL สำหรับ Webhook (เพื่อให้คนอื่นยิงข้อมูลเข้ามาได้ถูก)
+      - WEBHOOK_URL=http://localhost:5678/
+      
+      # ปิดการใช้ Secure Cookie เพราะเราใช้ HTTP ธรรมดา (ถ้าเปิดเป็น true จะล็อกอินไม่ได้ถ้าไม่มี HTTPS)
+      - N8N_SECURE_COOKIE=false
+      
+      # --- ตั้งค่าโซนเวลา (Timezone) ---
+      # กำหนดให้เป็นเวลาประเทศไทย (เพื่อให้ Cron Job หรือ Schedule ทำงานตรงเวลาบ้านเรา)
+      - TZ=Asia/Bangkok
+      - GENERIC_TIMEZONE=Asia/Bangkok
+      
+      # --- ตั้งค่าระบบสมาชิก (Basic Auth) ---
+      # เปิดใช้งานระบบล็อกอิน (ป้องกันคนอื่นแอบเข้ามาใช้)
+      - N8N_BASIC_AUTH_ACTIVE=true
+      # ชื่อผู้ใช้ (Username)
+      - N8N_BASIC_AUTH_USER=admin
+      # รหัสผ่าน (Password) **ควรเปลี่ยนตรงนี้ให้ยากขึ้นก่อนใช้งานจริง**
+      - N8N_BASIC_AUTH_PASSWORD=password123
+      
+    # จัดการพื้นที่เก็บข้อมูล (Volumes)
+    # เชื่อมถังข้อมูลชื่อ "n8n_data" เข้ากับโฟลเดอร์ "/home/node/.n8n" ใน Container
+    # ประโยชน์: ข้อมูล Workflow และ Account จะไม่หาย แม้เราจะลบหรือรีสตาร์ท Container
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+# ประกาศสร้าง Volume (ถังเก็บข้อมูล) ชื่อ n8n_data เพื่อให้ Service ด้านบนเรียกใช้
+volumes:
+  n8n_data:
